@@ -5,7 +5,7 @@ from fabric.api import *
 
 def production():
 	env.hosts = ['hdp@phiservera.philol.uni-leipzig.de:22']
-	env.directory = '/home/hdp/convvv'
+	env.directory = '/home/hdp/github/miku/convvv'
 	env.activate = 'source /home/hdp/.virtualenvs/convvv/bin/activate'
 	env.deploy_user = 'hdp'
 

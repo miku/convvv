@@ -17,7 +17,12 @@ import subprocess, threading
 
 app = Flask(__name__)
 app.secret_key = 'cd408d0f0345b5a#933#b081b06b74927c'
-app.debug = False # supervisord???
+app.debug = False
+try:
+	if os.environ['CONVVV_MODE'] == 'dev':
+		app.debug = True
+except:
+	pass
 
 participants = set()
 
@@ -191,6 +196,7 @@ def index():
 			'tries' : 0,
 			'status' : 200,
 			'url' : '/doneq',
+			'scheduled' : [],
 		}
 		
 		if storage_obj.content_type == 'application/pdf':

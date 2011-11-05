@@ -22,6 +22,7 @@ def pip_install_req():
 	virtualenv('pip install -r devel-req.txt')
 
 def restart_dev_server():
+	# make sure supervisor has at least been started once
 	virtualenv('supervisorctl -c supervisord.prod.conf restart webapp')
 
 def deploy():

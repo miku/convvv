@@ -129,6 +129,10 @@ def copy_to_download_dir(path):
 
 # Welcome to the web
 
+@app.errorhandler(404)
+def page_not_found(e):
+	return render_template('404.html'), 404
+
 @app.route('/', methods=('GET',))
 def hello():
 	return redirect(url_for('index'))

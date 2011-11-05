@@ -1,0 +1,87 @@
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>upload</title>
+	<script type="text/javascript" charset="utf-8" src="{{ url_for('static', filename='js/jquery-1.7.min.js') }}"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ url_for('static', filename='js/droparea.js') }}"></script>	
+	<style type="text/css" media="screen">
+		.droparea {
+            position:relative;
+            text-align: center;
+        }
+        .droparea div {
+            position: absolute;
+            top:0;
+            width: 100%;
+            height: 100%;
+        }
+        .droparea .instructions {
+            border: 2px dashed #ddd;
+            opacity: .8;
+        }
+        .droparea .instructions.over {
+            border: 2px dashed #000;
+            background: #ffa;
+        }
+        .droparea .progress {
+            position:absolute;
+            bottom: 0;
+            width: 100%;
+            height: 0;
+            color: #fff;
+            background: #6b0;
+        }
+        #areas { width: 480px; }
+        .spot {
+            width: 460px;
+            height: 345px;
+        }
+        .thumb {
+            float: left;
+            margin:20px 20px 0 0;
+            width: 140px;
+            min-height: 105px;
+        }
+        .desc {
+            float:right;
+            width: 460px;
+        }
+        .signature a { color:#555; text-decoration:none; }
+        .signature img { margin-right:5px; vertical-align: middle; }
+        
+	</style>
+</head>
+<body>
+	<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload') }}">
+	   	<p>Please choose a file: <input type="file" name="upload"></p>
+		<p><input type="submit" name="submit" value="Upload" id="submit"></p>
+	
+	<div class="droparea spot" data-width="460" data-height="345" data-type="jpg" data-crop="true" data-quality="60"></div>
+		
+	</form>
+	
+	
+	<script>
+		$(document).ready(function(){
+	        // Calling jQuery "droparea" plugin
+	        $('.droparea').droparea({
+	            'post' : "{{ url_for('debug') }}",
+	            'init' : function(r){
+	                //console.log('my init',r);
+	            },
+	            'start' : function(r){
+	                //console.log('my start',r);
+	            },
+	            'error' : function(r){
+	                //console.log('my error',r);
+	            },
+	            'complete' : function(r){
+	                //console.log('my complete',r);
+	            }
+	        });
+		});
+    </script>
+    
+</body>
+</html>
+

@@ -1,3 +1,14 @@
+function doneq_checker(url) {
+	console.log("Now polling results from " + url + " ...");
+	$.get(url, function(json) {
+		if (json['data']['stillinq'] > 0) {
+			setTimeout("doneq_checker('" + url + "')", 1000);
+		} else {
+			console.log("All done. Now put the links to the site!!!");
+		}
+	});	
+}
+
 (function( $ ){
     var s;
     // Methods
@@ -51,7 +62,10 @@
 			
             // File uploaded
             xhr.addEventListener("load", function (e) {
-				console.log(e.target.responseText); // MTC
+				console.log("got back after upload: " + e.target.responseText); // MTC
+				var response = jQuery.parseJSON(e.target.responseText);
+				doneq_checker(response['data']['url']);
+				
                 // var r = jQuery.parseJSON(e.target.responseText);
                 // s.complete(r);
                 // area.find('img').remove();
@@ -91,7 +105,7 @@
             'noimage'     : 'Unsupported file type!',
             'uploaded'    : 'Uploaded',
             'maxsize'     : '5000', //Kb
-            'post'        : 'upload.php'
+            'post'        : 'index'
         };
         this.each(function(){
             if(o) $.extend(s, o);

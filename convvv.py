@@ -14,6 +14,9 @@ import subprocess, threading
 
 app = Flask(__name__)
 app.secret_key = 'cd408d0f0345b5a#933#b081b06b74927c'
+app.debug = True
+
+participants = set()
 
 def interrupted(signum, frame):
 	"called when read times out"
@@ -78,7 +81,20 @@ def get_private_handle(filename):
 	"""
 	return os.path.join(BASEPATH, filename)
 
-@app.route('/', methods=('GET', 'POST'))
+@app.route('/', methods=('GET',))
+def hello():
+	return redirect(url_for('index'))
+
+
+@app.route('/doneq', methods=('GET',))
+def doneq():
+	data = {
+		'stillinq' : 2,
+		'done' : ['url_to_coverted_file_1', 'url_to_coverted_file_2']
+	}
+	return jsonify(data=data)
+
+@app.route('/index/', methods=('GET', 'POST'))
 def index():
 	# debugging
 	for key, value in request.__dict__.items():
@@ -105,19 +121,23 @@ def index():
 		
 		if storage_obj.content_type == 'application/pdf':
 			timestamp = int(time.time())
-			scheduled = [
-				{ 'given' : get_public_handle(given), 'converter' : 'pdftotext' },
+			data = {
+				'status' : 200,
+				'url' : '/doneq',
+				'scheduled' : 
+					{ 'given' : get_public_handle(given), 'converter' : 'pdftotext' },
 				# add more here
-			]
+			}
 			# text_file = os.path.join(directory, 'out.{0}.pdftotext.txt'.format(int(time.time())))
 			# 
 			# command = Command("pdftotext {0} {1}".format(given, text_file))
 			# command.run(timeout=3)
 
-		return jsonify(scheduled=scheduled)
+		return jsonify(data=data)
 
 		# now we got hold of the file ...
 	return render_template('index.html')
+
 
 if __name__ == "__main__":
 	app.run(debug=True)

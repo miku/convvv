@@ -1,8 +1,31 @@
-function doneq_checker(url) {
-	console.log("Now polling results from " + url + " ...");
-	$.get(url, function(json) {
-		if (json['data']['stillinq'] > 0) {
-			setTimeout("doneq_checker('" + url + "')", 1000);
+// implement JSON.stringify serialization
+JSON.stringify = JSON.stringify || function (obj) {
+    var t = typeof (obj);
+    if (t != "object" || obj === null) {
+        // simple data type
+        if (t == "string") obj = '"'+obj+'"';
+        return String(obj);
+    }
+    else {
+        // recurse array or object
+        var n, v, json = [], arr = (obj && obj.constructor == Array);
+        for (n in obj) {
+            v = obj[n]; t = typeof(v);
+            if (t == "string") v = '"'+v+'"';
+            else if (t == "object" && v !== null) v = JSON.stringify(v);
+            json.push((arr ? "" : '"' + n + '":') + String(v));
+        }
+        return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+    }
+};
+
+function doneq_checker(obj) {
+	console.log("Polling results from " + JSON.stringify(obj.data.url) + " for given object: " + JSON.stringify(obj) + "...");
+	$.get(obj.data.url, { 'data' : JSON.stringify(obj.data) }, function(json) {
+		if (json.data.done == false) {
+			$.doTimeout( 1000, function(){
+				doneq_checker(json);
+			});
 		} else {
 			console.log("All done. Now put the links to the site!!!");
 		}
@@ -64,7 +87,7 @@ function doneq_checker(url) {
             xhr.addEventListener("load", function (e) {
 				console.log("got back after upload: " + e.target.responseText); // MTC
 				var response = jQuery.parseJSON(e.target.responseText);
-				doneq_checker(response['data']['url']);
+				doneq_checker(response);
 				
                 // var r = jQuery.parseJSON(e.target.responseText);
                 // s.complete(r);

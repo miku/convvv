@@ -26,6 +26,10 @@ signal.signal(signal.SIGALRM, interrupted)
 
 BASEPATH = os.path.expanduser('~/github/miku/convvv/storage')
 
+SERVICE_EXT = {
+	"pdftotext" : "txt",
+}
+
 class Command(object):
 	"""
 	Interesting find on SO:
@@ -67,6 +71,11 @@ def get_storage_dir(filelike):
 		os.makedirs(destination)
 	return destination
 
+def get_storage_dir_from_path(path):
+	"""
+	Return the absolute sha/parts only."""
+	return '/'.join(path.split('/')[:-1])
+
 def get_public_handle(filename):
 	"""
 	Shorten something like 
@@ -81,17 +90,34 @@ def get_private_handle(filename):
 	"""
 	return os.path.join(BASEPATH, filename)
 
+def get_expected_path(filename, service, timestamp):
+	"""
+	Return the expected path for a uploaded (original) file
+	and a service, e.g. pdftotext
+	"""
+	directory = get_storage_dir_from_path(filename)
+	return os.path.join(
+		directory, '{0}-{1}.{2}'.format(timestamp, service, SERVICE_EXT[service]))
+
+
+# Welcome to the web
+
 @app.route('/', methods=('GET',))
 def hello():
 	return redirect(url_for('index'))
 
-
 @app.route('/doneq', methods=('GET',))
 def doneq():
-	data = {
-		'stillinq' : 2,
-		'done' : ['url_to_coverted_file_1', 'url_to_coverted_file_2']
-	}
+	print request.args['data']
+	data = json.loads(request.args['data'])
+	for public_handle in data['scheduled']:
+		private_handle = get_private_handle(public_handle)
+		print 'Checking if arrived:', public_handle, private_handle
+		if os.path.exists(private_handle):
+			data['scheduled'].remove(public_handle)
+	data.update({ 
+		'done' : (0 == len(data['scheduled'])) 
+	})
 	return jsonify(data=data)
 
 @app.route('/index/', methods=('GET', 'POST'))
@@ -124,14 +150,14 @@ def index():
 			data = {
 				'status' : 200,
 				'url' : '/doneq',
-				'scheduled' : 
-					{ 'given' : get_public_handle(given), 'converter' : 'pdftotext' },
-				# add more here
+				'scheduled' : [
+					get_public_handle(get_expected_path(given, 'pdftotext', timestamp)),
+				]
 			}
-			# text_file = os.path.join(directory, 'out.{0}.pdftotext.txt'.format(int(time.time())))
-			# 
-			# command = Command("pdftotext {0} {1}".format(given, text_file))
-			# command.run(timeout=3)
+			
+			target = get_expected_path(given, 'pdftotext', timestamp)
+			command = Command("pdftotext {0} {1}".format(given, target))
+			command.run(timeout=3)
 
 		return jsonify(data=data)
 

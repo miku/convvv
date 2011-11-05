@@ -42,6 +42,7 @@ SERVICE_EXT = {
 	"pngtojpeg" : "jpg",
 	"pngtogif" : "gif",
 	"wavtomp3" : "mp3",
+	"xlstocsv" : "csv",
 }
 
 class Command(object):
@@ -247,6 +248,20 @@ def index():
 
 			target = get_expected_path(given, 'wavtomp3', timestamp)
 			command = Command("lame -h -V 0 {0} {1}".format(given, target))
+			command.run(timeout=3)
+		
+		elif storage_obj.content_type == 'application/vnd.ms-excel':
+
+			data.update({
+				'status' : 200,
+				'url' : '/doneq',
+				'scheduled' : [
+					get_public_handle(get_expected_path(given, 'xlstocsv', timestamp)),
+				]
+			})
+
+			target = get_expected_path(given, 'xlstocsv', timestamp)
+			command = Command("/usr/bin/env xls2csv {0} > {1}".format(given, target))
 			command.run(timeout=3)
 
 		return jsonify(data=data)

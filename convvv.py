@@ -34,6 +34,7 @@ SERVICE_EXT = {
 	"pdftops" : "ps",
 	"pngtojpeg" : "jpg",
 	"pngtogif" : "gif",
+	"wavtomp3" : "mp3",
 }
 
 class Command(object):
@@ -146,7 +147,8 @@ def doneq():
 				data['links'] = []
 				data['links'].append(url_for('static', filename=get_download_path(private_handle, public=True)))
 	data.update({ 
-		'done' : (0 == len(data['scheduled'])) 
+		'done' : (0 == len(data['scheduled'])),
+		'tries' : data['tries'] + 1
 	})
 	return jsonify(data=data)
 
@@ -177,16 +179,22 @@ def index():
 		
 		timestamp = int(time.time())
 		
+		print "Got :", storage_obj.content_type
+		
+		data = {
+			'tries' : 0,
+			'status' : 200,
+			'url' : '/doneq',
+		}
+		
 		if storage_obj.content_type == 'application/pdf':
-			data = {
-				'status' : 200,
-				'url' : '/doneq',
+			data.update({
 				'scheduled' : [
 					get_public_handle(get_expected_path(given, 'pdftotext', timestamp)),
 					get_public_handle(get_expected_path(given, 'pdftohtml', timestamp)),
 					get_public_handle(get_expected_path(given, 'pdftops', timestamp)),
 				]
-			}
+			})
 			
 			target = get_expected_path(given, 'pdftotext', timestamp)
 			command = Command("pdftotext {0} {1}".format(given, target))
@@ -201,14 +209,12 @@ def index():
 			command.run(timeout=3)
 			
 		elif storage_obj.content_type == 'image/png':
-			data = {
-				'status' : 200,
-				'url' : '/doneq',
+			data.update({
 				'scheduled' : [
 					get_public_handle(get_expected_path(given, 'pngtojpeg', timestamp)),
 					get_public_handle(get_expected_path(given, 'pngtogif', timestamp)),
 				]
-			}
+			})
 			
 			target = get_expected_path(given, 'pngtojpeg', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
@@ -216,6 +222,19 @@ def index():
 
 			target = get_expected_path(given, 'pngtogif', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
+			command.run(timeout=3)
+		
+		elif storage_obj.content_type in ('audio/vnd.wave', 'audio/wav'):
+			data.update({
+				'status' : 200,
+				'url' : '/doneq',
+				'scheduled' : [
+					get_public_handle(get_expected_path(given, 'wavtomp3', timestamp)),
+				]
+			})
+
+			target = get_expected_path(given, 'wavtomp3', timestamp)
+			command = Command("lame -h -V 0 {0} {1}".format(given, target))
 			command.run(timeout=3)
 
 		return jsonify(data=data)

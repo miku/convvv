@@ -29,18 +29,23 @@ if(!Array.prototype.last) {
 function doneq_checker(obj) {
 	console.log("Polling results from " + JSON.stringify(obj.data.url) + " for given object: " + JSON.stringify(obj) + "...");
 	$.get(obj.data.url, { 'data' : JSON.stringify(obj.data) }, function(json) {
-		if (json.data.done == false) {
-			$.doTimeout( 300, function(){
+		if (json.data.done == false && json.data.tries < 8) {
+			$.doTimeout( 1000, function(){
 				doneq_checker(json);
 			});
 		} else {
-			console.log("All done. Now put the links to the site!!!");
-			console.log("Last response was: " + JSON.stringify(json));
-			console.log("Now showing results");
-			for (var i = json.data.links.length - 1; i >= 0; i--){
-				console.log(json.data.links[i]);
-				$("#downloads").append("<li><a href='" + json.data.links[i] + "'>" + json.data.links[i].split('/').last() + "</a></li>")
-			};
+			console.log("All done or abort.");
+			if (json.data.tries == 8) {
+				console.log("Error");
+				$("#downloads").append("Sorry, we encountered an error. Yeah, that sucks.");
+			} else {
+				console.log("Last response was: " + JSON.stringify(json));
+				console.log("Now showing results");
+				for (var i = json.data.links.length - 1; i >= 0; i--){
+					console.log(json.data.links[i]);
+					$("#downloads").append("<li><a href='" + json.data.links[i] + "'>" + json.data.links[i].split('/').last() + "</a></li>")
+				};
+			}
 		}
 	});	
 }
@@ -135,7 +140,7 @@ function doneq_checker(obj) {
             'init': m.init,
             'start': m.start,
             'complete': m.complete,
-            'instructions': 'Drop a file into this gray box',
+            'instructions': 'Drop a file into this box',
             'over'        : 'drop file here!',
             'nosupport'   : 'No support for the File API in this web browser',
             'noimage'     : 'Unsupported file type!',

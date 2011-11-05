@@ -12,6 +12,38 @@ import copy
 app = Flask(__name__)
 app.secret_key = 'cd408d0f0345b5a#933#b081b06b74927c'
 
+import subprocess, threading
+
+class Command(object):
+	"""
+	Interesting find on SO:
+	http://stackoverflow.com/questions/1191374/subprocess-with-timeout
+	Usage //
+	command = Command("echo 'Process started'; sleep 2; echo 'Process finished'")
+	command.run(timeout=3)
+	command.run(timeout=1)
+	"""
+	def __init__(self, cmd):
+		self.cmd = cmd
+		self.process = None
+
+	def run(self, timeout):
+		def target():
+			print 'Thread started'
+			self.process = subprocess.Popen(self.cmd, shell=True)
+			self.process.communicate()
+			print 'Thread finished'
+
+		thread = threading.Thread(target=target)
+		thread.start()
+
+		thread.join(timeout)
+		if thread.is_alive():
+			print 'Terminating process'
+			self.process.terminate()
+			thread.join()
+		print self.process.returncode
+
 def get_storage_dir(filelike):
 	basepath = os.path.expanduser('~/github/miku/convvv/storage')
 	sha1 = hashlib.sha1()
@@ -49,6 +81,9 @@ def index():
 			handle.write(storage_obj.content_type)
 		storage_obj.save(filepath)
 		
+		if storage_obj.content_type == 'application/pdf':
+			pass
+
 		# now we got hold of the file ...
 	return render_template('index.html')
 

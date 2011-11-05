@@ -103,9 +103,11 @@
 	        $('.droparea').droparea({
 	            'post' : "{{ url_for('index') }}",
 	            'init' : function(r){
+					$("#status").html("init");
 	                console.log('my init',r);
 	            },
 	            'start' : function(r){
+					$("#status").html("start");
 					// $("#status").html("<img src=\"{{ url_for('static', filename='images/spinner.gif') }}\"></img>&nbsp;&nbsp;<span class='busy'>Upload finished. Converting...</span>");
 	                console.log('my start',r);
 	            },
@@ -113,7 +115,7 @@
 	                console.log('my error',r);
 	            },
 	            'complete' : function(r){
-					$("#status").html("<img src=\"{{ url_for('static', filename='images/spinner.gif') }}\"></img>&nbsp;&nbsp;<span class='busy'>Upload finished. Converting...</span>");
+					$("#status").html("<img src=\"{{ url_for('static', filename='images/spinner.gif') }}\"></img>&nbsp;&nbsp;<span class='busy'>Converting...</span>");
 	                console.log('my complete',r);
 					$(".progress").remove();
 					$(".droparea").append("<div class='instructions'>Got another?</div>")

@@ -32,6 +32,8 @@ SERVICE_EXT = {
 	"pdftotext" : "txt",
 	"pdftohtml" : "html",
 	"pdftops" : "ps",
+	"pngtojpeg" : "jpg",
+	"pngtogif" : "gif",
 }
 
 class Command(object):
@@ -173,8 +175,9 @@ def index():
 			handle.write(storage_obj.content_type)
 		storage_obj.save(given)
 		
+		timestamp = int(time.time())
+		
 		if storage_obj.content_type == 'application/pdf':
-			timestamp = int(time.time())
 			data = {
 				'status' : 200,
 				'url' : '/doneq',
@@ -197,7 +200,23 @@ def index():
 			command = Command("pdftops {0} {1}".format(given, target))
 			command.run(timeout=3)
 			
-			print "Initiated all conversions."
+		elif storage_obj.content_type == 'image/png':
+			data = {
+				'status' : 200,
+				'url' : '/doneq',
+				'scheduled' : [
+					get_public_handle(get_expected_path(given, 'pngtojpeg', timestamp)),
+					get_public_handle(get_expected_path(given, 'pngtogif', timestamp)),
+				]
+			}
+			
+			target = get_expected_path(given, 'pngtojpeg', timestamp)
+			command = Command("convert {0} {1}".format(given, target))
+			command.run(timeout=3)
+
+			target = get_expected_path(given, 'pngtogif', timestamp)
+			command = Command("convert {0} {1}".format(given, target))
+			command.run(timeout=3)
 
 		return jsonify(data=data)
 

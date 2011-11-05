@@ -9,6 +9,7 @@ import hashlib
 import json
 import copy
 import signal
+import shutil
 import subprocess, threading
 
 
@@ -25,9 +26,12 @@ def interrupted(signum, frame):
 signal.signal(signal.SIGALRM, interrupted)
 
 BASEPATH = os.path.expanduser('~/github/miku/convvv/storage')
+DOWNLOAD_PATH = os.path.expanduser('~/github/miku/convvv/static/downloads')
 
 SERVICE_EXT = {
 	"pdftotext" : "txt",
+	"pdftohtml" : "html",
+	"pdftops" : "ps",
 }
 
 class Command(object):
@@ -99,6 +103,24 @@ def get_expected_path(filename, service, timestamp):
 	return os.path.join(
 		directory, '{0}-{1}.{2}'.format(timestamp, service, SERVICE_EXT[service]))
 
+def get_download_path(filename, public=False):
+	"""
+	For an internal path, get the download path.
+	"""
+	subdir = '/'.join(filename.split('/')[-3:-1])
+	static_directory = os.path.join(os.path.dirname(__file__), 'static')
+	basename = os.path.basename(os.path.basename(filename))
+	if public == True:
+		return os.path.join('downloads', subdir, basename)
+	else:
+		return os.path.join(DOWNLOAD_PATH, subdir, basename)
+
+def copy_to_download_dir(path):
+	target = get_download_path(path, public=False)
+	target_directory = os.path.dirname(target)
+	if not os.path.exists(target_directory):
+		os.makedirs(target_directory)
+	shutil.copyfile(path, target)
 
 # Welcome to the web
 
@@ -115,6 +137,12 @@ def doneq():
 		print 'Checking if arrived:', public_handle, private_handle
 		if os.path.exists(private_handle):
 			data['scheduled'].remove(public_handle)
+			copy_to_download_dir(private_handle)
+			try:
+				data['links'].append(url_for('static', filename=get_download_path(private_handle, public=True)))
+			except KeyError:
+				data['links'] = []
+				data['links'].append(url_for('static', filename=get_download_path(private_handle, public=True)))
 	data.update({ 
 		'done' : (0 == len(data['scheduled'])) 
 	})
@@ -152,12 +180,24 @@ def index():
 				'url' : '/doneq',
 				'scheduled' : [
 					get_public_handle(get_expected_path(given, 'pdftotext', timestamp)),
+					get_public_handle(get_expected_path(given, 'pdftohtml', timestamp)),
+					get_public_handle(get_expected_path(given, 'pdftops', timestamp)),
 				]
 			}
 			
 			target = get_expected_path(given, 'pdftotext', timestamp)
 			command = Command("pdftotext {0} {1}".format(given, target))
 			command.run(timeout=3)
+
+			target = get_expected_path(given, 'pdftohtml', timestamp)
+			command = Command("pdftotext {0} {1}".format(given, target))
+			command.run(timeout=3)
+
+			target = get_expected_path(given, 'pdftops', timestamp)
+			command = Command("pdftops {0} {1}".format(given, target))
+			command.run(timeout=3)
+			
+			print "Initiated all conversions."
 
 		return jsonify(data=data)
 

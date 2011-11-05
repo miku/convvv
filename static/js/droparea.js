@@ -19,15 +19,28 @@ JSON.stringify = JSON.stringify || function (obj) {
     }
 };
 
+
+if(!Array.prototype.last) {
+    Array.prototype.last = function() {
+        return this[this.length - 1];
+    }
+}
+
 function doneq_checker(obj) {
 	console.log("Polling results from " + JSON.stringify(obj.data.url) + " for given object: " + JSON.stringify(obj) + "...");
 	$.get(obj.data.url, { 'data' : JSON.stringify(obj.data) }, function(json) {
 		if (json.data.done == false) {
-			$.doTimeout( 1000, function(){
+			$.doTimeout( 300, function(){
 				doneq_checker(json);
 			});
 		} else {
 			console.log("All done. Now put the links to the site!!!");
+			console.log("Last response was: " + JSON.stringify(json));
+			console.log("Now showing results");
+			for (var i = json.data.links.length - 1; i >= 0; i--){
+				console.log(json.data.links[i]);
+				$("#downloads").append("<li><a href='" + json.data.links[i] + "'>" + json.data.links[i].split('/').last() + "</a></li>")
+			};
 		}
 	});	
 }

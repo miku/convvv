@@ -103,11 +103,11 @@
 	        $('.droparea').droparea({
 	            'post' : "{{ url_for('index') }}",
 	            'init' : function(r){
-					$("#status").html("init");
+					$("#status").html("Standing by.");
 	                console.log('my init',r);
 	            },
 	            'start' : function(r){
-					$("#status").html("start");
+					$("#status").html("<span class='busy'>Uploading...</span>");
 					// $("#status").html("<img src=\"{{ url_for('static', filename='images/spinner.gif') }}\"></img>&nbsp;&nbsp;<span class='busy'>Upload finished. Converting...</span>");
 	                console.log('my start',r);
 	            },

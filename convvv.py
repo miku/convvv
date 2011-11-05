@@ -1,5 +1,4 @@
 from flask import Flask, request, redirect, render_template, flash, url_for, jsonify
-from forms import UploadForm
 from werkzeug import secure_filename
 import base64
 import os

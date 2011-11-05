@@ -5,22 +5,25 @@ import base64
 import os
 import time
 import json
+import hashlib
+import json
 
 app = Flask(__name__)
 app.secret_key = 'cd408d0f0345b5a#933#b081b06b74927c'
 
-# def get_internal_filename(filename, timestamp=None):
-# 	if timestamp == None:
-# 		timestamp = time.time()
-# 	fname, ext = os.path.splitext(filename)
-# 	namepart = base64.b64encode(filename)
-# 	timepart = base64.b64encode(str(time.time()))
-# 	return '{0}-{1}'.format(namepart, timepart)
+def get_storage_dir(filelike):
+	basepath = os.path.expanduser('~/github/miku/convvv/storage')
+	sha1 = hashlib.sha1()
+	sha1.update(filelike.read())
+	digest = sha1.hexdigest()
+	shard, subdir = digest[:2], digest[2:]
+	destination = os.path.join(basepath, shard, subdir)
+	if not os.path.exists(destination):
+		os.makedirs(destination)
+	return destination
 
-
-	
 @app.route('/', methods=('GET', 'POST'))
-def debug():
+def index():
 	print "XXX"
 	for key, value in request.__dict__.items():
 		if isinstance(value, dict):
@@ -29,33 +32,27 @@ def debug():
 				print '\t', k, v
 		else:
 			print key, value
-	
+
 	if request.method == 'POST':
-		print request.files['x-file-name'].__dict__
-		print request.files['x-file-name'].__class__
-		print request.files['x-file-name'].content_type
-		request.files['x-file-name'].save('/tmp/heyheyhey')
+		# werkzeug.FileStorage
+		# http://www.pocoo.org/~blackbird/werkzeug-docs/utils.html
+		storage_obj = request.files['x-file-name']
+		directory = get_storage_dir(storage_obj.stream)
+		filepath = os.path.join(directory, secure_filename(storage_obj.filename))
 		
-	# 	print _file
-	# 	if _file:
-	# 		filename = secure_filename(_file.filename)
-	# 		_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-	# 		return redirect(url_for('upload', filename=filename))
-	return json.dumps({'img' : '', 'filename' : '', 'path' : ''})
-
-# @app.route('/upload', methods=['GET', 'POST'])
-# def upload():
-# 	if request.method == 'POST' and 'upload' in request.files:
-# 		original_filename = request.files['upload'].filename
-# 		filename = media.save(request.files['upload'], name=get_internal_filename(original_filename))
-# 		print filename
-# 		flash("File uploaded.")
-# 		return redirect(url_for('upload'))
-# 	return render_template('upload.html')
-
-@app.route("/hello")
-def hello():
-	return "Hello World!"
+		print filepath
+		print storage_obj
+		print storage_obj.__dict__
+		
+		# metadata ...
+		with open(os.path.join(directory, 'headers.json'), 'w') as handle:
+			handle.write(json.dumps(storage_obj.headers.to_list()))
+		with open(os.path.join(directory, 'content-type.txt'), 'w') as handle:
+			handle.write(storage_obj.content_type)
+		storage_obj.save(filepath)
+		
+		# now we got hold of the file ...
+	return render_template('index.html')
 
 if __name__ == "__main__":
 	app.run(debug=True)

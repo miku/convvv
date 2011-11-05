@@ -5,6 +5,20 @@
 	<script type="text/javascript" charset="utf-8" src="{{ url_for('static', filename='js/jquery-1.7.min.js') }}"></script>
 	<script type="text/javascript" charset="utf-8" src="{{ url_for('static', filename='js/droparea.js') }}"></script>	
 	<style type="text/css" media="screen">
+		html {
+			font-family: Verdana, Arial, "MS Trebuchet", sans-serif;
+			width: 760px;
+			margin: auto;
+		}
+		
+		#page {
+			background: #FFF;
+		}
+		
+		.droparea {
+			background: #EFEFEF;
+		}
+		
 		.droparea {
             position:relative;
             text-align: center;
@@ -16,11 +30,10 @@
             height: 100%;
         }
         .droparea .instructions {
-            border: 2px dashed #ddd;
-            opacity: .8;
+            border: 1px dashed black;
         }
         .droparea .instructions.over {
-            border: 2px dashed #000;
+            border: 1px dashed black;
             background: #ffa;
         }
         .droparea .progress {
@@ -33,8 +46,8 @@
         }
         #areas { width: 480px; }
         .spot {
-            width: 460px;
-            height: 345px;
+            width: 300px;
+            height: 300px;
         }
         .thumb {
             float: left;
@@ -52,36 +65,35 @@
 	</style>
 </head>
 <body>
-	<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload') }}">
-	   	<p>Please choose a file: <input type="file" name="upload"></p>
-		<p><input type="submit" name="submit" value="Upload" id="submit"></p>
-	
+	<div id="page">
+		<h1>Hi, I'm <span style="color:white; background: black; padding: 1px 5px 1px 5px">convvv</span>, born 11/4/11 in Île-de-France, at <a href="http://hackdayparis.org/">Hackday Paris</a>.</h1>
+		<h2>I'm from the first version of the Matrix.</h2>
+		<p>Current support: PDF, DOC, DOCX, XLS, CSV, PNG, JPG, TXT, MP3, WAV, FLV, OGG</p>
+
+	<!-- data-width="460" data-height="345" data-type="jpg" data-crop="true" data-quality="60" -->
 	<div class="droparea spot" data-width="460" data-height="345" data-type="jpg" data-crop="true" data-quality="60"></div>
-		
-	</form>
-	
 	
 	<script>
 		$(document).ready(function(){
 	        // Calling jQuery "droparea" plugin
 	        $('.droparea').droparea({
-	            'post' : "{{ url_for('debug') }}",
+	            'post' : "{{ url_for('index') }}",
 	            'init' : function(r){
-	                //console.log('my init',r);
+	                console.log('my init',r);
 	            },
 	            'start' : function(r){
-	                //console.log('my start',r);
+	                console.log('my start',r);
 	            },
 	            'error' : function(r){
-	                //console.log('my error',r);
+	                console.log('my error',r);
 	            },
 	            'complete' : function(r){
-	                //console.log('my complete',r);
+	                console.log('my complete',r);
 	            }
 	        });
 		});
     </script>
-    
+	</div>    
 </body>
 </html>
 

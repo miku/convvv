@@ -57,8 +57,8 @@
                 // area.find('img').remove();
                 // area.data('value',r.filename)
                 // .append($('<img>',{'src': r.path + r.filename + '?' + Math.random()}));
-                progress.addClass('uploaded');
-                progress.html(s.uploaded).fadeOut('slow');
+                // progress.addClass('uploaded');
+                // progress.html(s.uploaded).fadeOut('slow');
             }, false);
 			
             xhr.open("post", s.post, true);
@@ -85,7 +85,7 @@
             'init': m.init,
             'start': m.start,
             'complete': m.complete,
-            'instructions': 'drop an image file here',
+            'instructions': 'Drop a file into this gray box',
             'over'        : 'drop file here!',
             'nosupport'   : 'No support for the File API in this web browser',
             'noimage'     : 'Unsupported file type!',

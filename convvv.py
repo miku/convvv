@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, flash, url_for
+from flask import Flask, request, redirect, render_template, flash, url_for, jsonify
 from forms import UploadForm
 from werkzeug import secure_filename
 import base64
@@ -8,11 +8,20 @@ import json
 import hashlib
 import json
 import copy
+import signal
+import subprocess, threading
+
 
 app = Flask(__name__)
 app.secret_key = 'cd408d0f0345b5a#933#b081b06b74927c'
 
-import subprocess, threading
+def interrupted(signum, frame):
+	"called when read times out"
+	print 'interrupted!'
+
+signal.signal(signal.SIGALRM, interrupted)
+
+BASEPATH = os.path.expanduser('~/github/miku/convvv/storage')
 
 class Command(object):
 	"""
@@ -45,16 +54,29 @@ class Command(object):
 		print self.process.returncode
 
 def get_storage_dir(filelike):
-	basepath = os.path.expanduser('~/github/miku/convvv/storage')
 	sha1 = hashlib.sha1()
 	sha1.update(filelike.read())
 	filelike.stream.seek(0) # rewind
 	digest = sha1.hexdigest()
 	shard, subdir = digest[:2], digest[2:]
-	destination = os.path.join(basepath, shard, subdir)
+	destination = os.path.join(BASEPATH, shard, subdir)
 	if not os.path.exists(destination):
 		os.makedirs(destination)
 	return destination
+
+def get_public_handle(filename):
+	"""
+	Shorten something like 
+	~/github/miku/convvv/storage/ae/c9d4259d467c0883b10bdb584fe7add7e42c20/Getting_Started.pdf 
+	to ae/c9d4259d467c0883b10bdb584fe7add7e42c20/Getting_Started.pdf
+	"""
+	return '/'.join(filename.split('/')[-3:])
+
+def get_private_handle(filename):
+	"""
+	Inverse of get_public_handle()
+	"""
+	return os.path.join(BASEPATH, filename)
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
@@ -72,17 +94,27 @@ def index():
 		# http://www.pocoo.org/~blackbird/werkzeug-docs/utils.html
 		storage_obj = request.files['x-file-name']
 		directory = get_storage_dir(storage_obj)
-		filepath = os.path.join(directory, secure_filename(storage_obj.filename))
+		given = os.path.join(directory, secure_filename(storage_obj.filename))
 		
 		# metadata ...
 		with open(os.path.join(directory, 'headers.json'), 'w') as handle:
 			handle.write(json.dumps(storage_obj.headers.to_list()))
 		with open(os.path.join(directory, 'content-type.txt'), 'w') as handle:
 			handle.write(storage_obj.content_type)
-		storage_obj.save(filepath)
+		storage_obj.save(given)
 		
 		if storage_obj.content_type == 'application/pdf':
-			pass
+			timestamp = int(time.time())
+			scheduled = [
+				{ 'given' : get_public_handle(given), 'converter' : 'pdftotext' },
+				# add more here
+			]
+			# text_file = os.path.join(directory, 'out.{0}.pdftotext.txt'.format(int(time.time())))
+			# 
+			# command = Command("pdftotext {0} {1}".format(given, text_file))
+			# command.run(timeout=3)
+
+		return jsonify(scheduled=scheduled)
 
 		# now we got hold of the file ...
 	return render_template('index.html')

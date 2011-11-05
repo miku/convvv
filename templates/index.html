@@ -64,10 +64,19 @@
         .signature a { color:#555; text-decoration:none; }
         .signature img { margin-right:5px; vertical-align: middle; }
 
-
-		#downloads {
+		#right-side {
 			margin-left: 360px;
 			font-size: 12px;
+		}
+		
+		#status {
+			margin-bottom: 10px;
+			padding: 10px;
+			border: dashed thin gray;
+		}
+		.busy {
+			color: orange;
+			font-weight: bold;
 		}
         
 	</style>
@@ -80,7 +89,11 @@
 
 	<!-- data-width="460" data-height="345" data-type="jpg" data-crop="true" data-quality="60" -->
 	<div class="droparea spot" data-width="460" data-height="345" data-type="jpg" data-crop="true" data-quality="60"></div>
-	<div id="downloads">
+
+	<div id="right-side">
+		<div id="status">Standing by.</div>
+		<div id="downloads">
+	</div>
 		
 	</div>
 	
@@ -93,13 +106,17 @@
 	                console.log('my init',r);
 	            },
 	            'start' : function(r){
+					$("#status").html("<img src=\"{{ url_for('static', filename='images/spinner.gif') }}\"></img>&nbsp;&nbsp;<span class='busy'>Upload finished. Converting...</span>");
 	                console.log('my start',r);
 	            },
 	            'error' : function(r){
 	                console.log('my error',r);
 	            },
 	            'complete' : function(r){
+					$("#status").html("<img src=\"{{ url_for('static', filename='images/spinner.gif') }}\"></img>&nbsp;&nbsp;<span class='busy'>Upload finished. Converting...</span>");
 	                console.log('my complete',r);
+					$(".progress").remove();
+					$(".droparea").append("<div class='instructions'>Got another?</div>")
 	            }
 	        });
 		});

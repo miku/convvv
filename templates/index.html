@@ -78,7 +78,14 @@
 			color: orange;
 			font-weight: bold;
 		}
-        
+        .clear { clear: both; }
+		#footer {
+			border-top: solid thin gray;
+			margin-top: 40px;
+			padding: 20px 0 0 0;
+			color: #767676;
+			font-size: 12px;
+		}
 	</style>
 </head>
 <body>
@@ -91,7 +98,7 @@
 	<div class="droparea spot" data-width="460" data-height="345" data-type="jpg" data-crop="true" data-quality="60"></div>
 
 	<div id="right-side">
-		<div id="status">Standing by.</div>
+		<div id="status"></div>
 		<div id="downloads">
 	</div>
 		
@@ -103,7 +110,7 @@
 	        $('.droparea').droparea({
 	            'post' : "{{ url_for('index') }}",
 	            'init' : function(r){
-					$("#status").html("Standing by.");
+					$("#status").html("Here, but no file to convert - you should go out more.");
 	                console.log('my init',r);
 	            },
 	            'start' : function(r){
@@ -123,6 +130,12 @@
 	        });
 		});
     </script>
+	<div class="clear"></div>
+	<div id="footer">
+		This is a demo version with severe security issues. 
+		<span style="color: white; background: red; padding: 0 5px 0 5px;">Please DO NOT share URLs from this site</span> to random people! 
+		Besides, our server setup is far from web-scale, LOL. Thank you.
+	</div>
 	</div>    
 </body>
 </html>

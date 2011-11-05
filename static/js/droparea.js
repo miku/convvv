@@ -75,18 +75,33 @@ function doneq_checker(obj) {
             });
             area.append(progress);
 			
+			console.log(file.type);
             // File type control
             // if (typeof FileReader === "undefined" || !(/image/i).test(file.type)) {
 			if (typeof FileReader === "undefined") {
+				// !(/image\/png/i).test(file.type) ||
+				// !(/image\/jpeg/i).test(file.type) ||
+				// !(/audio\/wav/i).test(file.type) ||
+				// !(/audio\/vnd.wave/i).test(file.type) ||
+				// !(/application\/pdf/i).test(file.type)) {
+
+
+				// file.type != "image/png" ||
+				// file.type != "audio/vnd.wave" ||
+				// file.type != "audio/wav" ||
+				// file.type != "application/pdf") {
+
                 //area.html(file.type,s.noimage);
-                alert('only image files: jpeg, png, gif');
+                alert("We don't support this format yet. If this bothers you, tell me on twitter @cvvfj - that would be great.");
+				window.location = "/"; // how raw is that?
                 return false;
             }
 
             // File size control
             if (file.size > (s.maxsize * 1024)) {
                 //area.html(file.type,s.maxsize);
-                alert('max upload size: ' + s.maxsize + 'Kb');
+                alert('max upload size for now: ' + s.maxsize + 'Kb - will try to increase it until the demo - thanks!');
+				window.location = "/";
                 return false;
             }
 			
@@ -146,7 +161,7 @@ function doneq_checker(obj) {
             'nosupport'   : 'No support for the File API in this web browser',
             'noimage'     : 'Unsupported file type!',
             'uploaded'    : 'Uploaded',
-            'maxsize'     : '5000', //Kb
+            'maxsize'     : '500', //Kb
             'post'        : 'index'
         };
         this.each(function(){

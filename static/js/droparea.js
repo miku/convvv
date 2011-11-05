@@ -43,7 +43,7 @@ function doneq_checker(obj) {
 				console.log("Now showing results");
 				for (var i = json.data.links.length - 1; i >= 0; i--){
 					console.log(json.data.links[i]);
-					$("#downloads").append("<li><a href='" + json.data.links[i] + "'>" + json.data.links[i].split('/').last() + "</a></li>")
+					$("#downloads").append("<li><a target='_blank' href='" + json.data.links[i] + "'>" + json.data.links[i].split('/').last() + "</a></li>")
 				};
 			}
 		}

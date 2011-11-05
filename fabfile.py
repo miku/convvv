@@ -19,7 +19,7 @@ def git_pull():
 		sudo('git pull origin master', user=env.deploy_user)
 
 def pip_install_req():
-	virtualenv('pip install -U -r devel-req.txt')
+	virtualenv('pip install -r devel-req.txt')
 
 def deploy():
 	local('git push origin master')

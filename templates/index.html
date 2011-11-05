@@ -113,7 +113,7 @@
 	                console.log('my error',r);
 	            },
 	            'complete' : function(r){
-					$("#status").html("<span style='color: orange'>Upload finished. Converting...</span>");
+					$("#status").html("<img src=\"{{ url_for('static', filename='images/spinner.gif') }}\"></img>&nbsp;&nbsp;<span class='busy'>Upload finished. Converting...</span>");
 	                console.log('my complete',r);
 					$(".progress").remove();
 					$(".droparea").append("<div class='instructions'>Got another?</div>")

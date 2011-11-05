@@ -108,7 +108,7 @@ function doneq_checker(obj) {
 				doneq_checker(response);
 				
                 // var r = jQuery.parseJSON(e.target.responseText);
-                s.complete(r);
+                s.complete(response);
                 // area.find('img').remove();
                 // area.data('value',r.filename)
                 // .append($('<img>',{'src': r.path + r.filename + '?' + Math.random()}));

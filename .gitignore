@@ -3,3 +3,4 @@
 *.pyo
 storage/*
 static/downloads/*
+logs/*.log

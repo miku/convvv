@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from flask import Flask, request, redirect, render_template, flash, url_for, jsonify
 from werkzeug import secure_filename
 import base64
@@ -14,7 +17,7 @@ import subprocess, threading
 
 app = Flask(__name__)
 app.secret_key = 'cd408d0f0345b5a#933#b081b06b74927c'
-app.debug = True
+app.debug = False # supervisord???
 
 participants = set()
 
@@ -239,7 +242,7 @@ def index():
 		return jsonify(data=data)
 
 		# now we got hold of the file ...
-	return render_template('index.html')
+	return render_template('index.html', flash="Hello")
 
 
 if __name__ == "__main__":

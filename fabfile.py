@@ -21,10 +21,14 @@ def git_pull():
 def pip_install_req():
 	virtualenv('pip install -r devel-req.txt')
 
+def restart_dev_server():
+	virtualenv('supervisorctl -c supervisord.prod.conf restart webapp')
+
 def deploy():
 	local('git push origin master')
 	git_pull()
 	pip_install_req()
+	restart_dev_server()
 
 # def deploy():
 # 	local("git push origin master")

@@ -43,6 +43,9 @@ SERVICE_EXT = {
 	"pngtogif" : "gif",
 	"wavtomp3" : "mp3",
 	"xlstocsv" : "csv",
+	"doctotxt" : "txt",
+	"giftojpeg" : "jpg",
+	"giftopng" : "png",
 }
 
 class Command(object):
@@ -262,6 +265,35 @@ def index():
 
 			target = get_expected_path(given, 'xlstocsv', timestamp)
 			command = Command("/usr/bin/env xls2csv {0} > {1}".format(given, target))
+			command.run(timeout=3)
+
+		elif storage_obj.content_type == 'application/msword':
+			data.update({
+				'status' : 200,
+				'url' : '/doneq',
+				'scheduled' : [
+					get_public_handle(get_expected_path(given, 'doctotxt', timestamp)),
+				]
+			})
+
+			target = get_expected_path(given, 'doctotxt', timestamp)
+			command = Command("/usr/bin/env catdoc {0} > {1}".format(given, target))
+			command.run(timeout=3)
+		
+		elif storage_obj.content_type == 'image/gif':
+			data.update({
+				'scheduled' : [
+					get_public_handle(get_expected_path(given, 'giftojpeg', timestamp)),
+					get_public_handle(get_expected_path(given, 'giftopng', timestamp)),
+				]
+			})
+			
+			target = get_expected_path(given, 'giftojpeg', timestamp)
+			command = Command("convert {0} {1}".format(given, target))
+			command.run(timeout=3)
+
+			target = get_expected_path(given, 'giftopng', timestamp)
+			command = Command("convert {0} {1}".format(given, target))
 			command.run(timeout=3)
 
 		return jsonify(data=data)

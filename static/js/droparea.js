@@ -27,24 +27,24 @@ if(!Array.prototype.last) {
 }
 
 function doneq_checker(obj) {
-	console.log("Polling results from " + JSON.stringify(obj.data.url) + " for given object: " + JSON.stringify(obj) + "...");
+	// console.log("Polling results from " + JSON.stringify(obj.data.url) + " for given object: " + JSON.stringify(obj) + "...");
 	$.get(obj.data.url, { 'data' : JSON.stringify(obj.data) }, function(json) {
 		if (json.data.done == false && json.data.tries < 8) {
 			$.doTimeout( 1000, function(){
 				doneq_checker(json);
 			});
 		} else {
-			console.log("All done or abort.");
+			// console.log("All done or abort.");
 			if (json.data.tries == 8) {
-				console.log("Error");
+				// console.log("Error");
 				$("#downloads").append("Sorry, we encountered an error. Yeah, that sucks.");
 			} else {
 				$("#status").html("Conversions finished. Standing by.");
-				console.log("Last response was: " + JSON.stringify(json));
-				console.log("Now showing results");
+				// console.log("Last response was: " + JSON.stringify(json));
+				// console.log("Now showing results");
 				if (typeof json.data.links !== "undefined") {
 					for (var i = json.data.links.length - 1; i >= 0; i--){
-						console.log(json.data.links[i]);
+						// console.log(json.data.links[i]);
 						$("#downloads").prepend("<li><a target='_blank' href='" + json.data.links[i] + "'>" + json.data.links[i].split('/').last() + "</a></li>")
 					};
 				} else {
@@ -79,7 +79,7 @@ function doneq_checker(obj) {
             });
             area.append(progress);
 			
-			console.log(file.type);
+			// console.log(file.type);
             // File type control
             // if (typeof FileReader === "undefined" || !(/image/i).test(file.type)) {
 			if (typeof FileReader === "undefined") {
@@ -123,7 +123,7 @@ function doneq_checker(obj) {
 			
             // File uploaded
             xhr.addEventListener("load", function (e) {
-				console.log("got back after upload: " + e.target.responseText); // MTC
+				// console.log("got back after upload: " + e.target.responseText); // MTC
 				var response = jQuery.parseJSON(e.target.responseText);
 				doneq_checker(response);
 				

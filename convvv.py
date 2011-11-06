@@ -297,7 +297,7 @@ def index():
 			command = Command("convert {0} {1}".format(given, target))
 			command.run(timeout=3)
 
-		elif storage_obj.content_type == 'text/plain':
+		elif storage_obj.content_type == 'application/x-makeself':
 			data.update({
 				'scheduled' : [
 					get_public_handle(get_expected_path(given, 'resumetopdf', timestamp)),

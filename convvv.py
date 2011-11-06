@@ -301,13 +301,8 @@ def index():
 			data.update({
 				'scheduled' : [
 					get_public_handle(get_expected_path(given, 'resumetopdf', timestamp)),
-					# get_public_handle(get_expected_path(given, 'giftopng', timestamp)),
 				]
 			})
-			
-			print get_expected_path(given, 'resumetopdf', timestamp)
-			
-			# hack given just for testing ...
 			
 			target = get_expected_path(given, 'resumetopdf', timestamp)
 			# command = Command("pdflatex -jobname={1} {0}".format(given, target))

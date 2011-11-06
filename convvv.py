@@ -47,6 +47,8 @@ SERVICE_EXT = {
 	"giftojpeg" : "jpg",
 	"giftopng" : "png",
 	"resumetopdf" : "pdf",
+	"jpegtopng" : "png",
+	"jpegtogif" : "gif",
 }
 
 class Command(object):
@@ -238,6 +240,22 @@ def index():
 			command.run(timeout=3)
 
 			target = get_expected_path(given, 'pngtogif', timestamp)
+			command = Command("convert {0} {1}".format(given, target))
+			command.run(timeout=3)
+
+		elif storage_obj.content_type == 'image/jpeg':
+			data.update({
+				'scheduled' : [
+					get_public_handle(get_expected_path(given, 'jpegtopng', timestamp)),
+					get_public_handle(get_expected_path(given, 'jpegtogif', timestamp)),
+				]
+			})
+			
+			target = get_expected_path(given, 'jpegtopng', timestamp)
+			command = Command("convert {0} {1}".format(given, target))
+			command.run(timeout=3)
+
+			target = get_expected_path(given, 'jpegtogif', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
 			command.run(timeout=3)
 		

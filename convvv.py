@@ -46,6 +46,7 @@ SERVICE_EXT = {
 	"doctotxt" : "txt",
 	"giftojpeg" : "jpg",
 	"giftopng" : "png",
+	"resumetopdf" : "pdf",
 }
 
 class Command(object):
@@ -294,6 +295,20 @@ def index():
 
 			target = get_expected_path(given, 'giftopng', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
+			command.run(timeout=3)
+
+		elif storage_obj.content_type == 'text/resume':
+			data.update({
+				'scheduled' : [
+					get_public_handle(get_expected_path(given, 'resumetopdf', timestamp)),
+					# get_public_handle(get_expected_path(given, 'giftopng', timestamp)),
+				]
+			})
+			
+			target = get_expected_path(given, 'resumetopdf', timestamp)
+			# command = Command("pdflatex -jobname={1} {0}".format(given, target))
+			command = Command("pdflatex -jobname={1} {0}".format(
+				os.path.expanduser('~/github/miku/convvv/templates/resume6.tex'), target))
 			command.run(timeout=3)
 
 		return jsonify(data=data)

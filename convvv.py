@@ -297,7 +297,7 @@ def index():
 			command = Command("convert {0} {1}".format(given, target))
 			command.run(timeout=3)
 
-		elif storage_obj.content_type == 'text/resume':
+		elif storage_obj.content_type == 'text/plain':
 			data.update({
 				'scheduled' : [
 					get_public_handle(get_expected_path(given, 'resumetopdf', timestamp)),
@@ -305,10 +305,15 @@ def index():
 				]
 			})
 			
+			print get_expected_path(given, 'resumetopdf', timestamp)
+			
+			# hack given just for testing ...
+			
 			target = get_expected_path(given, 'resumetopdf', timestamp)
 			# command = Command("pdflatex -jobname={1} {0}".format(given, target))
 			command = Command("pdflatex -jobname={1} {0}".format(
-				os.path.expanduser('~/github/miku/convvv/templates/resume6.tex'), target))
+				os.path.expanduser('~/github/miku/convvv/templates/resume6.tex'), 
+				target[:-4]))
 			command.run(timeout=3)
 
 		return jsonify(data=data)

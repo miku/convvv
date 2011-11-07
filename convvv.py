@@ -57,7 +57,7 @@ class Command(object):
 	http://stackoverflow.com/questions/1191374/subprocess-with-timeout
 	Usage //
 	command = Command("echo 'Process started'; sleep 2; echo 'Process finished'")
-	command.run(timeout=3)
+	command.run(timeout=1)
 	command.run(timeout=1)
 	"""
 	def __init__(self, cmd):
@@ -67,6 +67,7 @@ class Command(object):
 	def run(self, timeout):
 		def target():
 			print 'Thread started'
+			print '---- ', self.cmd
 			self.process = subprocess.Popen(self.cmd, shell=True)
 			self.process.communicate()
 			print 'Thread finished'
@@ -217,15 +218,15 @@ def index():
 			
 			target = get_expected_path(given, 'pdftotext', timestamp)
 			command = Command("pdftotext {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 			target = get_expected_path(given, 'pdftohtml', timestamp)
 			command = Command("pdftotext {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 			target = get_expected_path(given, 'pdftops', timestamp)
 			command = Command("pdftops {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 			
 		elif storage_obj.content_type == 'image/png':
 			data.update({
@@ -237,11 +238,11 @@ def index():
 			
 			target = get_expected_path(given, 'pngtojpeg', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 			target = get_expected_path(given, 'pngtogif', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 		elif storage_obj.content_type == 'image/jpeg':
 			data.update({
@@ -253,11 +254,11 @@ def index():
 			
 			target = get_expected_path(given, 'jpegtopng', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 			target = get_expected_path(given, 'jpegtogif', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 		
 		elif storage_obj.content_type in ('audio/vnd.wave', 'audio/wav'):
 			data.update({
@@ -270,7 +271,7 @@ def index():
 
 			target = get_expected_path(given, 'wavtomp3', timestamp)
 			command = Command("lame -h -V 0 {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 		
 		elif storage_obj.content_type == 'application/vnd.ms-excel':
 
@@ -284,7 +285,7 @@ def index():
 
 			target = get_expected_path(given, 'xlstocsv', timestamp)
 			command = Command("/usr/bin/env xls2csv {0} > {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 		elif storage_obj.content_type == 'application/msword':
 			data.update({
@@ -297,7 +298,7 @@ def index():
 
 			target = get_expected_path(given, 'doctotxt', timestamp)
 			command = Command("/usr/bin/env catdoc {0} > {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 		
 		elif storage_obj.content_type == 'image/gif':
 			data.update({
@@ -309,11 +310,11 @@ def index():
 			
 			target = get_expected_path(given, 'giftojpeg', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 			target = get_expected_path(given, 'giftopng', timestamp)
 			command = Command("convert {0} {1}".format(given, target))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 		elif storage_obj.content_type == 'text/plain':
 			data.update({
@@ -327,7 +328,7 @@ def index():
 			command = Command("pdflatex -jobname={1} {0}".format(
 				os.path.expanduser('~/github/miku/convvv/templates/resume6.tex'), 
 				target[:-4]))
-			command.run(timeout=3)
+			command.run(timeout=1)
 
 		return jsonify(data=data)
 

@@ -30,7 +30,7 @@ function doneq_checker(obj) {
 	// console.log("Polling results from " + JSON.stringify(obj.data.url) + " for given object: " + JSON.stringify(obj) + "...");
 	$.get(obj.data.url, { 'data' : JSON.stringify(obj.data) }, function(json) {
 		if (json.data.done == false && json.data.tries < 8) {
-			$.doTimeout( 1000, function(){
+			$.doTimeout( 100, function(){
 				doneq_checker(json);
 			});
 		} else {
@@ -165,7 +165,7 @@ function doneq_checker(obj) {
             'nosupport'   : 'No support for the File API in this web browser',
             'noimage'     : 'Unsupported file type!',
             'uploaded'    : 'Uploaded',
-            'maxsize'     : '500', //Kb
+            'maxsize'     : '50000', //Kb
             'post'        : 'index'
         };
         this.each(function(){

@@ -217,7 +217,7 @@ def index():
 			})
 			
 			target = get_expected_path(given, 'pdftotext', timestamp)
-			command = Command("pdftotext {0} {1}".format(given, target))
+			command = Command("pdftotext -enc UTF-8 {0} {1}".format(given, target))
 			command.run(timeout=1)
 
 			target = get_expected_path(given, 'pdftohtml', timestamp)
